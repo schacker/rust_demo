@@ -48,7 +48,7 @@ fn test_for_update() {
 
   for word in text.split_whitespace() {
     let count = map.entry(word).or_insert(0); // or_insert() 返回对应对应值的可变引用
-    *count += 1;
+    *count += 1; // 解引用，再加1
   }
 
   println!("{:?}", map);

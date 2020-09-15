@@ -47,18 +47,24 @@ fn test_for_vector() {
   let mut vec = vec![1,2,3];
   println!("{}", "遍历向量集合");
   // 必须使用引用，for loop 等操作同样遵循所有权和借用规则
+  // for i in &mut vec {
+  //   *i += 100; //* 解引用操作
+  //   println!("{}", i);
+  // }
   for i in &mut vec {
-    *i += 100; //* 解引用操作
-    println!("{}", i);
-  }
-  for mut i in vec {
-    println!("{}", i);
-    i += 100;
+    // println!("{}", i);
+    *i += 100;
     println!("{}", i);
   }
 
-  // for mut i in &mut vec {
-  //   println!("{}", i);
+  for mut j in vec {
+    // println!("{}", i);
+    j += 100;
+    println!("{}", j);
+  }
+  // 下面代码编译无法通过，因为可变引用穿过了不可变引用
+  // for i in &mut vec {
+  //   // println!("{}", i);
   //   *i += 100;
   //   println!("{}", i);
   // }

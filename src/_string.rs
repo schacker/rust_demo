@@ -24,7 +24,7 @@ fn test_string1() {
   let mut s1 = String::from("foo");
   let s2 = "bar"; //s2 没有所有权，s2为字符串字面量
   s1.push_str(s2); // 传入字符串slice 引用
-  println!("s2 is {}", s2);
+  println!("s2 is {} {}", s2, &s1[0..1]);
 }
 fn test_string_add_and_format() {
   let s1 = String::from("Hello, ");

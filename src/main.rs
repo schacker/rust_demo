@@ -17,11 +17,14 @@ mod _file;
 mod _trait;
 mod _struct_trait;
 mod _closures;
+mod _all_trait;
 
 fn main() {
+    _closures::generate_workout(2, 45);
     _closures::simulated_expensive_calculation(2);
     _struct_trait::test();
     _trait::test_largest();
+    _all_trait::test_trait();
     _file::open_file();
     _file::open_file_nomatch();
     // _panic::panic();

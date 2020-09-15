@@ -12,7 +12,10 @@ fn largest(list: &[i32]) -> i32 {
 
   max
 }
-// 泛型
+/**
+ * - 泛型
+ * - 通过 + 指定多个 trait bound
+ */
 fn largest_trait<T: PartialOrd + Copy >(list: &[T]) -> T {
   let mut max = list[0];
 

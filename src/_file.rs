@@ -4,9 +4,9 @@ use std::fs::File;
 use std::io;
 use std::io::ErrorKind;
 use std::io::Read;
-/*
-一般用法
-*/
+/**
+ * 一般用法
+ */
 pub fn open_file() {
   let f = File::open("test.txt");
   let f = match f {
@@ -24,7 +24,10 @@ pub fn open_file() {
     }
   };
 }
-// .unwrap() 会调用panic! .expect("info") panic! 包含"info"信息，闭包用法
+/**
+ * 打开文件，高级用法
+ * .unwrap() 会调用panic! .expect("info") panic! 包含"info"信息，闭包用法
+ */
 pub fn open_file_nomatch() {
   let f = File::open("test1.txt");
   // 闭包
@@ -54,7 +57,9 @@ pub fn open_read_file() -> Result<String, io::Error> {
   }
 }
 
-// ? 简化异常抛出流程
+/**
+ * ? 简化异常抛出流程 
+ */
 pub fn read_username_file() -> Result<String, io::Error> {
   let mut f = File::open("file.txt")?;
   let mut s = String::new();
