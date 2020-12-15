@@ -18,8 +18,11 @@ mod _trait;
 mod _struct_trait;
 mod _closures;
 mod _all_trait;
+mod _iterators;
 
 fn main() {
+    _iterators::test_filter_iterators();
+    _iterators::test_iterators();
     _closures::generate_workout(2, 45);
     _closures::simulated_expensive_calculation(2);
     _struct_trait::test();
