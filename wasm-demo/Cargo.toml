@@ -1,6 +1,6 @@
 [package]
-name = "wasm-demo"
-version = "0.1.0"
+name = "wasm-utils"
+version = "0.1.2"
 authors = ["huangwei <huangwei@ke.com>"]
 edition = "2018"
 
@@ -8,6 +8,11 @@ edition = "2018"
 
 [lib]
 crate-type = ["cdylib"]
+path = "src/lib.rs"
 
 [dependencies]
-wasm-bindgen = "0.2"
+wasm-bindgen = "0.2.50"
+wasm-bindgen-test="0.2"
+regex = "1.4.5"
+itertools = "0.10.0"
+console_error_panic_hook = "0.1.6"
