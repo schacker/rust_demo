@@ -1,3 +1,5 @@
+use std::env;
+
 pub fn test_iterators() {
     let vec = vec![1,2,3,4,5,6,7,7];
     let iterator = vec.iter();
@@ -45,4 +47,38 @@ impl Iterator for Counter {
             None
         }
     }
+}
+
+struct Config {
+    query: String,
+    filename: String,
+    case_sensitive: bool
+}
+
+impl Config {
+    pub fn new(mut args: std::env::Args) -> Result<Config, &'static str> {
+        args.next();
+
+        let query = match args.next() {
+            Some(arg) => arg,
+            None => return Err("无法获取query参数")
+        };
+        let filename = match args.next() {
+            Some(arg) => arg,
+            None => return Err("无法获取filename参数")
+        };
+
+        let case_sensitive = env::var("CASE_INSENSITIVE").is_err();
+        Ok(Config{ query, filename, case_sensitive })
+
+    }
+}
+
+#[test]
+fn using_other_iterator_trait_methods() {
+ let sum: u32 = Counter::new().zip(Counter::new().skip(1))
+                              .map(|(a,b)| a*b)
+                              .filter(|x| x%3 == 0)
+                              .sum();
+ assert_eq!(18, sum)
 }

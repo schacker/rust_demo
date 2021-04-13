@@ -21,14 +21,19 @@ mod _all_trait;
 mod _iterators;
 mod _utils;
 mod _log;
+mod injection;
+mod _box;
+mod _rc;
 
 fn main() {
-    _log::testlog();
+    _rc::test_rc();
+    _box::test_box();
+    // _log::testlog();
     let r = _utils::isAppWebView("vrStudio 10.1", "");
     let f = _utils::facilities(10);
     let s = _utils::appendSearch("/a/b/c", "?a=1&b=2&c=3");
     // _utils::testlog();
-    println!("{}", s);
+    println!("{}-{}-{}", r, f, s);
     _iterators::test_filter_iterators();
     _iterators::test_iterators();
     _closures::generate_workout(2, 45);
