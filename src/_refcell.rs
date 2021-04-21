@@ -1,3 +1,5 @@
+use std::cell::RefCell;
+use std::rc::Rc;
 
 #![allow(unused)]
 fn test_refcell() {
@@ -42,4 +44,26 @@ fn test_refcell() {
       }
     }
   }
+}
+/**
+ * 我们希望能够 Node 拥有其子节点，同时也希望通过变量来共享所有权，以便可以直接访问树中的每一个 Node，
+ * 为此 Vec<T> 的项的类型被定义为 Rc<Node>。我们还希望能修改其他节点的子节点，
+ * 所以 children 中 Vec<Rc<Node>> 被放进了 RefCell<T>。
+ */
+#[derive(Debug)]
+pub struct Node {
+  value: i32,
+  children: RefCell<Vec<Rc<Node>>>
+}
+
+pub fn test rc_refcell {
+  let leaf =  Rc::new(Node{
+    value: 3,
+    children: RefCell::new(vec![])
+  });
+
+  let branch = Rc::new(Node{
+    value: 5,
+    children: RefCell::new(vec![Rc::clone(&leaf)])
+  });
 }
