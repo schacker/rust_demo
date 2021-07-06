@@ -14,4 +14,7 @@ log = "0.4"
 
 [profile.release]
 panic='abort'
+opt-level = 3
 
+[profile.dev]
+opt-level = 0
