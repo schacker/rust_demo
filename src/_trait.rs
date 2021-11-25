@@ -26,6 +26,19 @@ fn largest_trait<T: PartialOrd + Copy >(list: &[T]) -> T {
   }
   max
 }
+// 使用where简化trait bounds
+fn largest_trait_where<T>(list: &[T]) -> T 
+  where T: PartialOrd + Copy 
+{
+  let mut max = list[0];
+
+  for &item in list.iter() {
+    if max < item {
+      max = item
+    }
+  }
+  max
+}
 pub fn test_largest() {
   let number_list = vec![34, 50, 25, 100, 65];
 
