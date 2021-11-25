@@ -1,7 +1,7 @@
-use std::cell::RefCell;
-use std::rc::Rc;
-
 #![allow(unused)]
+use std::cell::RefCell;
+use std::rc::{Rc, Weak};
+
 fn test_refcell() {
   /**
    * trait 类似接口
@@ -53,17 +53,24 @@ fn test_refcell() {
 #[derive(Debug)]
 pub struct Node {
   value: i32,
+  parent: RefCell<Weak<Node>>,
   children: RefCell<Vec<Rc<Node>>>
 }
 
-pub fn test rc_refcell {
+pub fn rc_refcell() {
   let leaf =  Rc::new(Node{
     value: 3,
+    parent: RefCell::new(Weak::new()),
     children: RefCell::new(vec![])
   });
+  println!("leaf parent = {:?}", leaf.parent.borrow().upgrade());
 
   let branch = Rc::new(Node{
     value: 5,
+    parent: RefCell::new(Weak::new()),
     children: RefCell::new(vec![Rc::clone(&leaf)])
   });
+
+  *leaf.parent.borrow_mut() = Rc::downgrade(&branch);
+  println!("leaf parent = {:?}", leaf.parent.borrow().upgrade()); 
 }
