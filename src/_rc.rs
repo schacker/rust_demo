@@ -19,8 +19,8 @@ use std::rc::Rc;
 pub fn test_rc() {
   let a = Rc::new(Cons(5, Rc::new(Cons(10, Rc::new(Nil)))));
   println!("count after creating a = {}", Rc::strong_count(&a));
-  let b = Cons(3, Rc::clone(&a));
-  println!("count after creating b = {}", Rc::strong_count(&a));
+  let b = Cons(3, Rc::clone(&a)); // clone增加引用计数，不会做数据深拷贝
+  println!("count after creating b = {}", Rc::strong_count(&a)); // 强引用计数
   {
     let c = Cons(4, Rc::clone(&a));
     println!("count after creating c = {}", Rc::strong_count(&a));
