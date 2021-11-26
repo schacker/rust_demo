@@ -73,10 +73,10 @@ Box<T> 允许在`编译时`执行`不可变或可变`借用检查；Rc<T>仅允�
 因为 RefCell<T> 允许在运行时执行可变借用检查，所以我们可以在即便 RefCell<T> 自身是不可变的情况下修改其内部的值。
 在不可变值内部改变值就是 内部可变性 模式。
 
-#### 解引用
+### 解引用
 解引用使用 `*`运算符，先调用deref方法再接着使用`*`解引用的操作，只发生一次
 
-#### 函数和方法的隐式解引用强制多态
+### 函数和方法的隐式解引用强制多态
 1. 只能工作在实现了Deref trait的类型上
 2. 解引用强制多态将一种类型（A）隐式转换为另外一种类型（B）的引用，因为A类型实现了Deref trait，并且其关联类型是B类型。比如，解引用强制多态可以将&String转换为&str，因为类型String实现了Deref trait并且其关联类型是str
 3. 解引用强制多态都发生在编译阶段，所以并没有运行时消耗
@@ -92,10 +92,10 @@ Rust 在发现类型和 trait 实现满足三种情况时会进行解引用强�
 
 第三个情况有些微妙：Rust 也会将可变引用强转为不可变引用。但是反之是 不可能 的：不可变引用永远也不能强转为可变引用。因为根据借用规则，如果有一个可变引用，其必须是这些数据的唯一引用（否则程序将无法编译）。将一个可变引用转换为不可变引用永远也不会打破借用规则。将不可变引用转换为可变引用则需要数据只能有一个不可变引用，而借用规则无法保证这一点。因此，Rust 无法假设将不可变引用转换为可变引用是可能的。
 
-#### Drop trait
+### Drop trait
 在值离开作用域时执行特定代码的机制
 
-#### 引用循环与内存泄漏是安全的，避免引用循环，可将Rc<T>变为Weak<T>
+### 引用循环与内存泄漏是安全的，避免引用循环，可将Rc<T>变为Weak<T>
 
 1. 调用 Rc::clone 会增加 Rc<T> 实例的 strong_count，和只在其 strong_count 为 0 时才会被清理的 Rc<T> 实例。
 2. 也可以通过调用 Rc::downgrade 并传递 Rc<T> 实例的引用来创建其值的 弱引用（weak reference）。调用 Rc::downgrade 时会得到 Weak<T> 类型的智能指针。不同于将 Rc<T> 实例的 strong_count 加1，调用 Rc::downgrade 会将 weak_count 加1。Rc<T> 类型使用 weak_count 来记录其存在多少个 Weak<T> 引用，类似于 strong_count。
@@ -105,5 +105,283 @@ Rust 在发现类型和 trait 实现满足三种情况时会进行解引用强�
 
 >因为 Weak<T> 引用的值可能已经被丢弃了，为了使用 Weak<T> 所指向的值，我们必须确保其值仍然有效。为此可以调用 Weak<T> 实例的 upgrade 方法，这会返回 Option<Rc<T>>。如果 Rc<T> 值还未被丢弃，则结果是 Some；如果 Rc<T> 已被丢弃，则结果是 None。因为 upgrade 返回一个 Option<T>，我们确信 Rust 会处理 Some 和 None 的情况，所以它不会返回非法指针。
 
-#### RefCell<T>/Rc<T> 与 Mutex<T>/Arc<T> 的相似性
+### RefCell<T>/Rc<T> 与 Mutex<T>/Arc<T> 的相似性
 因为`Arc::new(Mutex::new(0))`是不可变的，不过可以获取内部值的可变引用，也就意味着`Mutex<T>`提供了内部可变性，就像Cell系列。使用 RefCell<T> 可以改变 Rc<T> 中的内容那样，同样的可以使用 Mutex<T> 来改变 Arc<T> 中的内容。
+
+### 模式和匹配
+- match 分支
+```rust
+match VALUE {
+  PATTERN => EXPRESSION
+  PATTERN => EXPRESSION
+  PATTERN => EXPRESSION
+  _       -> EXPRESSION
+}
+```
+
+- if let 表达式
+
+> 一般用在只关心特定个别条件的情况
+
+- while let 条件循环
+```rust
+let mut stack = vec![1,2,3];
+
+while let Some(top) = stack.pop() {
+  println!("{}", top);
+}
+```
+
+- for 循环
+```rust
+let v = vec!['a', 'b', 'c'];
+
+for (index, value) in v.iter().enumerate() { //解构
+    println!("{} is at index {}", value, index);
+}
+```
+
+- let 模式？
+
+```rust
+let (x, y, z) = (1, 2, 3);
+```
+
+- 函数参数
+```rust
+// x 部分也是一个模式
+fn foo(x: i32) {
+    // 代码
+}
+// 解构
+fn print_coordinates(&(x, y): &(i32, i32)) {
+    println!("Current location: ({}, {})", x, y);
+}
+
+```
+
+#### 模式语法
+
+- 匹配字面量
+- 匹配命名变量
+```rust
+  let x = Some(5);
+  let y = 10;
+
+  match x {
+      Some(50) => println!("Got 50"),
+      Some(y) => println!("Matched, y = {:?}", y),
+      _ => println!("Default case, x = {:?}", x),
+  }
+
+  println!("at the end: x = {:?}, y = {:?}", x, y);
+```
+- 多个模式
+```rust
+let x = 1;
+
+match x {
+  1 | 2 => println!("one or two"),
+  3 => println!("three"),
+  _ => println!("anything"),
+}
+```
+- 通过..= 匹配值的范围
+```rust
+let x = 5;
+
+match x {
+  1..=5 => println!("one through five"),
+  _ => println!("something else"),
+}
+
+let x = 'c';
+
+match x {
+    'a'..='j' => println!("early ASCII letter"),
+    'k'..='z' => println!("late ASCII letter"),
+    _ => println!("something else"),
+}
+```
+- 解构并分解值
+```rs
+struct Point {
+  x: i32,
+  y: i32,
+}
+
+fn main() {
+  let p = Point { x: 0, y: 7 };
+
+  let Point { x: a, y: b } = p;
+  assert_eq!(0, a);
+  assert_eq!(7, b);
+}
+
+struct Point {
+  x: i32,
+  y: i32,
+}
+
+fn main() {
+  let p = Point { x: 0, y: 7 };
+
+  let Point { x, y } = p;
+  assert_eq!(0, x);
+  assert_eq!(7, y);
+}
+
+fn main() {
+  let p = Point { x: 0, y: 7 };
+
+  match p {
+    Point { x, y: 0 } => println!("On the x axis at {}", x),
+    Point { x: 0, y } => println!("On the y axis at {}", y),
+    Point { x, y } => println!("On neither axis: ({}, {})", x, y),
+  }
+}
+```
+- 解构枚举
+```rust
+enum Message {
+  Quit,
+  Move { x: i32, y: i32 },
+  Write(String),
+  ChangeColor(i32, i32, i32),
+}
+
+fn main() {
+  let msg = Message::ChangeColor(0, 160, 255);
+
+  match msg {
+    Message::Quit => {
+      println!("The Quit variant has no data to destructure.")
+    }
+    Message::Move { x, y } => {
+      println!(
+          "Move in the x direction {} and in the y direction {}",
+          x,
+          y
+      );
+    }
+    Message::Write(text) => println!("Text message: {}", text),
+    Message::ChangeColor(r, g, b) => {
+      println!(
+        "Change the color to red {}, green {}, and blue {}",
+        r,
+        g,
+        b
+      )
+    }
+  }
+}
+```
+- 解构嵌套的结构体和枚举
+```rust
+enum Color {
+  Rgb(i32, i32, i32),
+  Hsv(i32, i32, i32),
+}
+
+enum Message {
+  Quit,
+  Move { x: i32, y: i32 },
+  Write(String),
+  ChangeColor(Color),
+}
+
+fn main() {
+  let msg = Message::ChangeColor(Color::Hsv(0, 160, 255));
+
+  match msg {
+    Message::ChangeColor(Color::Rgb(r, g, b)) => {
+      println!(
+        "Change the color to red {}, green {}, and blue {}",
+        r,
+        g,
+        b
+      )
+    }
+    Message::ChangeColor(Color::Hsv(h, s, v)) => {
+      println!(
+        "Change the color to hue {}, saturation {}, and value {}",
+        h,
+        s,
+        v
+      )
+    }
+    _ => ()
+  }
+}
+```
+- 解构结构体和元组
+```rust
+let ((feet, inches), Point {x, y}) = ((3, 10), Point { x: 3, y: -10 });
+```
+- 忽略模式中的值 _ 忽略整个值
+```rust
+fn foo(_: i32, y: i32) {
+  println!("This code only uses the y parameter: {}", y);
+}
+```
+- 嵌套的 _ 忽略部分值
+```rust
+let mut setting_value = Some(5);
+let new_setting_value = Some(10);
+
+match (setting_value, new_setting_value) {
+  (Some(_), Some(_)) => {
+    println!("Can't overwrite an existing customized value");
+  }
+  _ => {
+    setting_value = new_setting_value;
+  }
+}
+
+println!("setting is {:?}", setting_value);
+```
+- 用..忽略剩余值
+```rust
+struct Point {
+  x: i32,
+  y: i32,
+  z: i32,
+}
+
+let origin = Point { x: 0, y: 0, z: 0 };
+
+match origin {
+  Point { x, .. } => println!("x is {}", x),
+}
+```
+- 匹配守卫提供的额外条件
+```rust
+let num = Some(4);
+
+match num {
+  Some(x) if x < 5 => println!("less than five: {}", x),
+  Some(x) => println!("{}", x),
+  None => (),
+}
+```
+- @ 绑定 
+> 允许创建一个存放值的变量的同时，测试其值是否匹配模式
+```rust
+enum Message {
+    Hello { id: i32 },
+}
+
+let msg = Message::Hello { id: 5 };
+
+match msg {
+    Message::Hello { id: id_variable @ 3..=7 } => {
+        println!("Found an id in range: {}", id_variable)
+    },
+    Message::Hello { id: 10..=12 } => {
+        println!("Found an id in another range")
+    },
+    Message::Hello { id } => {
+        println!("Found some other id: {}", id)
+    },
+}
+```
