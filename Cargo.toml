@@ -1,3 +1,9 @@
+[workspace]
+members = [
+  'hello_macro',
+  'web'
+]
+
 [package]
 name = "owner"
 version = "0.1.0"
@@ -11,6 +17,9 @@ regex = "1.4.5"
 itertools = "0.10.0"
 log4rs = "1.0.0"
 log = "0.4"
+hello_macro = { path = "./hello_macro" }
+hello_macro_derive = { path = "./hello_macro/hello_macro_derive" }
+
 
 [profile.release]
 panic='abort'
