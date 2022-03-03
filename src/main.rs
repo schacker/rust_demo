@@ -34,9 +34,9 @@ mod _macro;
 
 fn main() {
     _macro::t_macro();
-    return;
     highl_fn_closures::test_highl_fn();
     impl_trait::test_impl_trait();
+    return;
     thread_mutex::test_multi_mutex();
     thread_mutex::test_mutex();
     thread_spawn::test_for_mpsc();

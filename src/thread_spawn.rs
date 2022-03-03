@@ -18,21 +18,22 @@ pub fn create_thread() {
     thread::sleep(Duration::from_millis(1));
   }
   
-  handle.join().unwrap(); // 调用join确保创建新线程执行完成
+  handle.join().unwrap(); // 调用join确保创建新线程执行完成，此后逻辑需要等到新线程创建并执行完成后才会执行
 }
 /**
  * 消息传递并发
  */
 pub fn test_mpsc() {
+  // 创建消息通道，tx 发送者， rx 接受者
   let (tx, rx) = mpsc::channel();
-
-    thread::spawn(move || {
-        let val = String::from("hi");
-        tx.send(val).unwrap();
-    });
-
-    let received = rx.recv().unwrap(); //recv 会阻塞当前主线程，直到接收到一个值，返回 Result<T, E>   try_recv不会阻塞，立刻返回一个Result<T, E>
-    println!("Got: {}", received);
+  // 创建线程使用tx发送消息
+  thread::spawn(move || {
+    let val = String::from("hi");
+    tx.send(val).unwrap();
+  });
+  // 使用rx接收消息
+  let received = rx.recv().unwrap(); //recv 会阻塞当前主线程，直到接收到一个值，返回 Result<T, E>   try_recv不会阻塞，立刻返回一个Result<T, E>
+  println!("Got: {}", received);
 }
 /**
  * 发送多个消息
@@ -40,7 +41,7 @@ pub fn test_mpsc() {
  */
 pub fn test_for_mpsc() {
   let (tx, rx) = mpsc::channel();
-
+  // clone 生产者
   let tx1 = tx.clone();
   thread::spawn(move || {
     let vals = vec![

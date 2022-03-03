@@ -121,10 +121,10 @@ pub fn append_search(uri: &str, search: &str) -> String {
     _uri = uri.get(0..(uri.len()-1));
   }
 
-  let sFirst = search.starts_with("?") || search.starts_with("&");
+  let s_first = search.starts_with("?") || search.starts_with("&");
 
   let mut _search: Option<&str> = Some(search);
-  if sFirst {
+  if s_first {
     _search = search.get(1..(search.len()));
   }
 
