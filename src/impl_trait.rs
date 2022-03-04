@@ -48,6 +48,12 @@ pub fn test_impl_trait() {
         height: 10,
         label: String::from("OK")
       }),
+      // 此种类型为啥不行？这里都使用的是Box::new  可能判断的是内部类型？
+      // Box::new(SelectBox {
+      //   width: 75,
+      //   height: 10,
+      //   options: vec![String::from("OK")]
+      // })
     ],
   };
 

@@ -33,10 +33,11 @@ mod highl_fn_closures;
 mod _macro;
 
 fn main() {
+    
+    return;
     _macro::t_macro();
     highl_fn_closures::test_highl_fn();
     impl_trait::test_impl_trait();
-    return;
     thread_mutex::test_multi_mutex();
     thread_mutex::test_mutex();
     thread_spawn::test_for_mpsc();
