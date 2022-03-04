@@ -31,10 +31,14 @@ mod thread_mutex;
 mod impl_trait;
 mod highl_fn_closures;
 mod _macro;
+mod _unsafe;
+mod _highl_trait;
 
 fn main() {
-    
+    _highl_trait::test_highl_trait();
+    _highl_trait::test_wrapper();
     return;
+    _unsafe::test_unsafe();
     _macro::t_macro();
     highl_fn_closures::test_highl_fn();
     impl_trait::test_impl_trait();
