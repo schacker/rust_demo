@@ -12,57 +12,11 @@ use actix_web::{
     Result
 };
 use bytes::Bytes;
+use mysql::*;
+use mysql::prelude::*;
+use chrono::prelude::*;
 
-/// favicon handler
-#[get("/favicon")]
-async fn favicon() -> Result<fs::NamedFile> {
-    Ok(fs::NamedFile::open("static/favicon.ico")?)
-}
-
-/// simple index handler9
-#[get("/welcome")]
-async fn welcome(session: Session, req: HttpRequest) -> HttpResponse {
-    println!("{:?}", req);
-
-    // session
-    let mut counter = 1;
-    if let Some(count) = session.get::<i32>("counter").unwrap() {
-        println!("SESSION value: {}", count);
-        counter = count + 1;
-    }
-
-    // set counter to session
-    session.set("counter", counter).unwrap();
-
-    // response
-    HttpResponse::build(StatusCode::OK)
-        .content_type("text/html; charset=utf-8")
-        .body(include_str!("../static/welcome.html"))
-}
-
-/// 404 handler
-async fn p404() -> Result<fs::NamedFile> {
-    Ok(fs::NamedFile::open("static/404.html")?.set_status_code(StatusCode::NOT_FOUND))
-}
-
-/// response body
-async fn response_body(path: web::Path<String>) -> HttpResponse {
-    let text = format!("Hello {}!", *path);
-
-    let (tx, rx_body) = mpsc::channel();
-    let _ = tx.send(Ok::<_, Error>(Bytes::from(text)));
-
-    HttpResponse::Ok().streaming(rx_body)
-}
-
-/// handler with path parameters like `/user/{name}/`
-async fn with_param(req: HttpRequest, path: web::Path<(String,)>) -> HttpResponse {
-    println!("{:?}", req);
-
-    HttpResponse::Ok()
-        .content_type("text/plain")
-        .body(format!("Hello {:?}!", path.0))
-}
+mod router;
 
 #[actix_rt::main]
 async fn main() -> io::Result<()> {
@@ -76,14 +30,15 @@ async fn main() -> io::Result<()> {
             // enable logger - always register actix-web Logger middleware last
             .wrap(middleware::Logger::default())
             // register favicon
-            .service(favicon)
+            .service(router::favicon)
             // register simple route, handle all methods
-            .service(welcome)
+            .service(router::welcome)
             // with path parameters
-            .service(web::resource("/user/{name}").route(web::get().to(with_param)))
+            .service(web::resource("/user/{name}").route(web::get().to(router::with_param)))
+            .service(web::resource("/user_all/{name}").route(web::get().to(router::with_param)))
             // async response body
             .service(
-                web::resource("/async-body/{name}").route(web::get().to(response_body)),
+                web::resource("/async-body/{name}").route(web::get().to(router::response_body)),
             )
             .service(
                 web::resource("/test").to(|req: HttpRequest| match *req.method() {
@@ -111,7 +66,7 @@ async fn main() -> io::Result<()> {
             .default_service(
                 // 404 for GET request
                 web::resource("")
-                    .route(web::get().to(p404))
+                    .route(web::get().to(router::p404))
                     // all requests that are not `GET`
                     .route(
                         web::route()
