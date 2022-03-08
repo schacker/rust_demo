@@ -3,6 +3,9 @@ members = [
   'hello_macro',
   'web'
 ]
+exclude = [
+  "rust-web/basics"
+]
 
 [package]
 name = "owner"
